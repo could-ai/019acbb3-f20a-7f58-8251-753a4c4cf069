@@ -74,7 +74,14 @@ class WorkoutDetailScreen extends StatelessWidget {
               ),
             ),
             
+            const SizedBox(height: 24),
+
+            // Laps Section
+            Text('Laps', style: Theme.of(context).textTheme.headlineSmall),
             const SizedBox(height: 16),
+            _LapsTable(laps: workout.laps),
+
+            const SizedBox(height: 24),
             
             // Zones Placeholder
             Container(
@@ -184,6 +191,49 @@ class _ZoneBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(4),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _LapsTable extends StatelessWidget {
+  final List<Lap> laps;
+
+  const _LapsTable({required this.laps});
+
+  @override
+  Widget build(BuildContext context) {
+    if (laps.isEmpty) {
+      return const Text('No lap data available.');
+    }
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: DataTable(
+        columnSpacing: 20,
+        columns: const [
+          DataColumn(label: Text('#')),
+          DataColumn(label: Text('Time')),
+          DataColumn(label: Text('Avg Pwr')),
+          DataColumn(label: Text('Avg HR')),
+          DataColumn(label: Text('Min HR')),
+          DataColumn(label: Text('Max HR')),
+        ],
+        rows: laps.map((lap) {
+          return DataRow(cells: [
+            DataCell(Text(lap.index.toString())),
+            DataCell(
+              Tooltip(
+                message: 'Sec: ${lap.durationInSeconds}\nMin:Sec: ${lap.durationMinSec}\nHr:Min:Sec: ${lap.durationHrMinSec}',
+                child: Text(lap.durationMinSec),
+              ),
+            ),
+            DataCell(Text('${lap.avgPowerWatts}W')),
+            DataCell(Text('${lap.avgHeartRate}')),
+            DataCell(Text('${lap.minHeartRate}')),
+            DataCell(Text('${lap.maxHeartRate}')),
+          ]);
+        }).toList(),
       ),
     );
   }
